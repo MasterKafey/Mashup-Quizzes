@@ -1,4 +1,11 @@
+import { useNavigate } from "react-router-dom";
+
 function Admin() {
+  
+  const navigate = useNavigate();
+
+  
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
