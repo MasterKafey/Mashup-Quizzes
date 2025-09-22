@@ -8,7 +8,7 @@ function Mp3List() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [formName, setFormName] = useState('');
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   /**
    * Fetches the list of music files from the backend `/music` route
@@ -80,23 +80,40 @@ function Mp3List() {
     setChecked(checked.map((c, i) => (i === index ? !c : c)));
   };
 
+  async function createQuiz(formName, selectedFiles) {
+    try {
+      const response = await axios.post('http://localhost:3000/quiz-creation', {
+        formName,
+        selectedFiles
+      });
+
+      console.log('✅ Quiz created:', response.data);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        // Server responded with an error (400, 500, etc.)
+        console.error('❌ Error:', error.response.data);
+        alert(error.response.data.message);
+      } else {
+        // Network or other issue
+        console.error('⚠️ Network error:', error.message);
+      }
+    }
+  }
+
   /**
    * Collects and logs all selected files.
    * In a real app, you might send this list to the backend.
    */
   const handleConfirm = () => {
-    const mashup = {};
-
-    mashup.mashupName = formName;
-
     const selectedFiles = files.filter((_, i) => checked[i]);
-    mashup.selectedFiles = selectedFiles;
 
-    if (mashup.mashupName.trim() === '' || mashup.selectedFiles.length <= 0) {
+    if (formName.trim() === '' || selectedFiles.length <= 0) {
       alert("Met un ptn de nom ou choisi des fichiers jsp .. c'est évident");
       return;
     }
-    console.log('Selected files:', mashup);
+    console.log('Selected files:', formName, selectedFiles);
+    createQuiz(formName, selectedFiles);
   };
 
   return (
@@ -155,7 +172,10 @@ function Mp3List() {
           )}
         </ul>
 
-        <button onClick={() => navigate('/my-quiz')}className="w-full bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition">
+        <button
+          onClick={() => navigate('/my-quiz')}
+          className="w-full bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition"
+        >
           My Quizs
         </button>
         <button

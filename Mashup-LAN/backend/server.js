@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const getMusicList = require('./getMusicList');
-const { Quiz } = require('./mongo'); 
+const { Quiz } = require('./mongo');
 
 const PORT = 3000;
 const app = express();
@@ -47,14 +47,14 @@ app.post('/quiz-creation', async (req, res) => {
   ) {
     return res.status(400).json({
       success: false,
-      message: 'No music selected, please add musics to the quiz.',
+      message: 'No music selected, please add musics to the quiz.'
     });
   }
 
   try {
     const quiz = new Quiz({
       name: formName,
-      songs: selectedFiles,
+      songs: selectedFiles
     });
 
     await quiz.save();
@@ -62,13 +62,13 @@ app.post('/quiz-creation', async (req, res) => {
     return res.json({
       success: true,
       message: 'Quiz saved ✅',
-      quiz,
+      quiz
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: 'Server error ❌',
+      message: 'Server error ❌'
     });
   }
 });
