@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Mp3List() {
   const [files, setFiles] = useState([]);
@@ -7,6 +8,7 @@ function Mp3List() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [formName, setFormName] = useState('');
+   const navigate = useNavigate();
 
   /**
    * Fetches the list of music files from the backend `/music` route
@@ -85,14 +87,14 @@ function Mp3List() {
   const handleConfirm = () => {
     const mashup = {};
 
-    mashup.mashupName = formName
+    mashup.mashupName = formName;
 
     const selectedFiles = files.filter((_, i) => checked[i]);
-    mashup.selectedFiles = selectedFiles
+    mashup.selectedFiles = selectedFiles;
 
-    if(mashup.mashupName.trim() === "" || mashup.selectedFiles.length <= 0){
+    if (mashup.mashupName.trim() === '' || mashup.selectedFiles.length <= 0) {
       alert("Met un ptn de nom ou choisi des fichiers jsp .. c'est évident");
-      return 
+      return;
     }
     console.log('Selected files:', mashup);
   };
@@ -153,7 +155,7 @@ function Mp3List() {
           )}
         </ul>
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition">
+        <button onClick={() => navigate('/my-quiz')}className="w-full bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition">
           My Quizs
         </button>
         <button

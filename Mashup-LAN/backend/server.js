@@ -1,18 +1,24 @@
 const express = require('express');
-const getMusicList = require('./getMusicList');
 const cors = require('cors');
+const getMusicList = require('./getMusicList');
+const { Quiz } = require('./mongo'); 
+
 const PORT = 3000;
 const app = express();
+
 app.use(express.json());
 app.use(cors());
 
+// ====== Routes ======
+
+// Return static music list
 app.get('/music', (req, res) => {
   res.send(getMusicList());
 });
 
+// Admin password check
 app.post('/admin', (req, res) => {
-
-  console.log(req.body)
+  console.log(req.body);
   const { password } = req.body;
 
   if (!password) {
@@ -28,24 +34,57 @@ app.post('/admin', (req, res) => {
   }
 });
 
-app.post('/quiz-creation', (req, res) => {
+// Create a new quiz
+app.post('/quiz-creation', async (req, res) => {
+  console.log(req.body);
+  const { selectedFiles, formName } = req.body;
 
-  console.log(req.body)
-  const { musicsSelected } = req.body;
-
-  if (!musicsSelected && musicsSelected.length <= 0 ) {
-    return res
-      .status(400)
-      .json({ message: 'No music selected, please add musics to the quiz.' });
+  if (
+    !selectedFiles ||
+    selectedFiles.length <= 0 ||
+    !formName ||
+    formName.trim().length <= 0
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: 'No music selected, please add musics to the quiz.',
+    });
   }
 
-  //createQuizz(musicsSelected)
-  //updateUiQuzzPage ? 
-  return res.json({ success: true, message: 'Access granted ✅' });
-  
+  try {
+    const quiz = new Quiz({
+      name: formName,
+      songs: selectedFiles,
+    });
+
+    await quiz.save();
+
+    return res.json({
+      success: true,
+      message: 'Quiz saved ✅',
+      quiz,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error ❌',
+    });
+  }
 });
 
+// Get all quizzes
+app.get('/quizs', async (req, res) => {
+  try {
+    const quizs = await Quiz.find();
+    res.json(quizs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error ❌' });
+  }
+});
 
+// ====== Start Server ======
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
