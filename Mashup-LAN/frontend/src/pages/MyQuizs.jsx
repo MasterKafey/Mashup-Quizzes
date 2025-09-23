@@ -1,5 +1,5 @@
 
-function MyQuiz() {
+function MyQuizs() {
   const quizzes = ["Mario Kart Quiz", "Zelda Quiz"];
 
   const handleClick = (quizName) => {
@@ -34,4 +34,4 @@ function MyQuiz() {
   );
 }
 
-export default MyQuiz;
+export default MyQuizs;

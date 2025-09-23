@@ -37,24 +37,25 @@ app.post('/admin', (req, res) => {
 // Create a new quiz
 app.post('/quiz-creation', async (req, res) => {
   console.log(req.body);
-  const { selectedFiles, formName } = req.body;
+  const { questions, formName } = req.body;
 
+  // --- Validation ---
   if (
-    !selectedFiles ||
-    selectedFiles.length <= 0 ||
+    !questions ||
+    questions.length <= 0 ||
     !formName ||
     formName.trim().length <= 0
   ) {
     return res.status(400).json({
       success: false,
-      message: 'No music selected, please add musics to the quiz.'
+      message: 'You must provide a name and at least one question/music ❌'
     });
   }
 
   try {
     const quiz = new Quiz({
       name: formName,
-      songs: selectedFiles
+      questions
     });
 
     await quiz.save();
@@ -68,7 +69,8 @@ app.post('/quiz-creation', async (req, res) => {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: 'Server error ❌'
+      message: 'Server error ❌',
+      error: err.message
     });
   }
 });

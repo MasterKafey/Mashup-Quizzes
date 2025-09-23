@@ -173,7 +173,7 @@ function Mp3List() {
         </ul>
 
         <button
-          onClick={() => navigate('/my-quiz')}
+          onClick={() => navigate('/my-quizs')}
           className="w-full bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition"
         >
           My Quizs

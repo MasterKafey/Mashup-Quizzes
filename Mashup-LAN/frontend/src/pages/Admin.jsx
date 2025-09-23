@@ -19,7 +19,7 @@ function Admin() {
       );
 
       if (res.data.success) {
-        navigate('/Mp3'); // ✅ redirect if password is correct
+        navigate('/quiz'); // ✅ redirect if password is correct
       } else {
         setError('Invalid password ❌');
       }

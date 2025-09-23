@@ -1,8 +1,8 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Admin from './pages/Admin';
-import Mp3List from './pages/Mp3List';
-import MyQuiz from './pages/MyQuiz';
+import MyQuizs from './pages/MyQuizs';
+import QuizCreation from './pages/QuizCreation';
 
 function App() {
   return (
@@ -10,8 +10,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Admin />} />
-          <Route path="/mp3" element={<Mp3List />} />
-          <Route path="/my-quiz" element={<MyQuiz />} />
+          <Route path="/quiz" element={<QuizCreation />} />
+          <Route path="/my-quizs" element={<MyQuizs />} />
 
         </Routes>
       </Router>
