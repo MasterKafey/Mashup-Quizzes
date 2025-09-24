@@ -38,8 +38,35 @@ app.post('/admin', (req, res) => {
 app.post('/quiz-creation', async (req, res) => {
   console.log(req.body);
   const { questions, formName, selectedFiles } = req.body;
-  console.log(questions, formName, selectedFiles)
 
+  console.log({
+    questions: questions,
+    formName: formName,
+    selectedFiles: selectedFiles
+  });
+
+  try {
+    const quiz = new Quiz({
+      name: formName,
+      questions: questions,
+      selectedFiles: selectedFiles
+    });
+
+    await quiz.save();
+
+    return res.json({
+      success: true,
+      message: 'Quiz saved ✅',
+      quiz
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error ❌',
+      error: err.message
+    });
+  }
 });
 
 // Get all quizzes
