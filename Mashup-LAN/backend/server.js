@@ -37,42 +37,9 @@ app.post('/admin', (req, res) => {
 // Create a new quiz
 app.post('/quiz-creation', async (req, res) => {
   console.log(req.body);
-  const { questions, formName } = req.body;
+  const { questions, formName, selectedFiles } = req.body;
+  console.log(questions, formName, selectedFiles)
 
-  // --- Validation ---
-  if (
-    !questions ||
-    questions.length <= 0 ||
-    !formName ||
-    formName.trim().length <= 0
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: 'You must provide a name and at least one question/music ❌'
-    });
-  }
-
-  try {
-    const quiz = new Quiz({
-      name: formName,
-      questions
-    });
-
-    await quiz.save();
-
-    return res.json({
-      success: true,
-      message: 'Quiz saved ✅',
-      quiz
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error ❌',
-      error: err.message
-    });
-  }
 });
 
 // Get all quizzes

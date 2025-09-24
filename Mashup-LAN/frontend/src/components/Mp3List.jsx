@@ -8,6 +8,8 @@ function Mp3List() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [formName, setFormName] = useState('');
+  const [questions, setQuestions] = useState([{ question: '' }]);
+
   const navigate = useNavigate();
 
   /**
@@ -80,11 +82,12 @@ function Mp3List() {
     setChecked(checked.map((c, i) => (i === index ? !c : c)));
   };
 
-  async function createQuiz(formName, selectedFiles) {
+  async function createQuiz(formName, selectedFiles, questions) {
     try {
       const response = await axios.post('http://localhost:3000/quiz-creation', {
         formName,
-        selectedFiles
+        selectedFiles,
+        questions
       });
 
       console.log('✅ Quiz created:', response.data);
@@ -112,13 +115,94 @@ function Mp3List() {
       alert("Met un ptn de nom ou choisi des fichiers jsp .. c'est évident");
       return;
     }
-    console.log('Selected files:', formName, selectedFiles);
-    createQuiz(formName, selectedFiles);
+    console.log('Selected files:', formName, selectedFiles, questions);
+    createQuiz(formName, selectedFiles, questions);
   };
 
+  // 2 EME COMPOSANT  C EST MOCHE MAIS CA MARCHE
+
+  function QuestionsQuiz() {
+    // Add an empty question
+    const addQuestion = () => {
+      setQuestions([...questions, { question: '' }]);
+    };
+
+    // Remove a question by index
+    const removeQuestion = (index) => {
+      setQuestions(questions.filter((_, i) => i !== index));
+    };
+
+    // Update a question text
+    const updateQuestion = (index, value) => {
+      const updated = [...questions];
+      updated[index].question = value;
+      setQuestions(updated);
+    };
+
+    // Confirm: log or send to backend
+    const handleConfirm = () => {
+      if (!formName.trim() || questions.some((q) => !q.question.trim())) {
+        alert('⚠️ Please enter a quiz name and fill all questions.');
+        return;
+      }
+      console.log('✅ Quiz created:', { formName, questions });
+      // Here you could call axios.post('/quiz-creation', { formName, questions })
+    };
+
+    return (
+      <div className="flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+          {/* Questions List */}
+          <ul className="space-y-3 mb-6">
+            {questions.map((q, index) => (
+              <li
+                key={index}
+                className="flex items-center justify-between gap-2 border-b pb-2"
+              >
+                <input
+                  type="text"
+                  value={q.question}
+                  onChange={(e) => updateQuestion(index, e.target.value)}
+                  placeholder={`Question ${index + 1}`}
+                  className="flex-1 px-2 py-1 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => removeQuestion(index)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+                >
+                  ❌
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {/* Add Question Button */}
+          <button
+            onClick={addQuestion}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg shadow-md transition mb-2"
+          >
+            ➕ Add Question
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center bg-gray-100 flex-col">
+      <button
+        onClick={() => navigate('/my-quizs')}
+        className="w-1/3 bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition"
+      >
+        My Quizs
+      </button>
       <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+        <label>Mashup Name</label>
+        <input
+          placeholder="Mario Kart, Claire Obscure... "
+          onChange={(e) => setFormName(e.target.value)}
+          className="flex-1 mx-2 px-2 py-1 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ></input>
         <div className="flex items-center justify-between border-b pb-2 mb-4 gap-2">
           <span className="font-semibold text-gray-800">MP3</span>
 
@@ -140,12 +224,6 @@ function Mp3List() {
 
         {error && <p className="text-red-600">{error}</p>}
 
-        <label>Mashup Name</label>
-        <input
-          placeholder="Mario Kart, Claire Obscure... "
-          onChange={(e) => setFormName(e.target.value)}
-          className="flex-1 mx-2 px-2 py-1 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        ></input>
         <ul className="space-y-3 mb-6">
           {filteredFiles.map((file, index) => {
             const realIndex = files.indexOf(file);
@@ -171,13 +249,9 @@ function Mp3List() {
             </li>
           )}
         </ul>
+        {QuestionsQuiz()}
 
-        <button
-          onClick={() => navigate('/my-quizs')}
-          className="w-full bg-blue-600 hover:bg-blue-700 mb-2 text-white font-semibold py-2 rounded-lg shadow-md transition"
-        >
-          My Quizs
-        </button>
+        {/* Confirm Button */}
         <button
           onClick={handleConfirm}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-md transition"
