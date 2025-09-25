@@ -36,28 +36,28 @@ app.post('/admin', (req, res) => {
 
 // Create a new quiz
 app.post('/quiz-creation', async (req, res) => {
-  console.log(req.body);
-  const { questions, formName, selectedFiles } = req.body;
-
-  console.log({
-    questions: questions,
-    formName: formName,
-    selectedFiles: selectedFiles
-  });
-
   try {
-    const quiz = new Quiz({
-      name: formName,
-      questions: questions,
-      selectedFiles: selectedFiles
+    console.log(req.body);
+    const { quiz } = req.body;
+
+    if (!quiz || !quiz.formName || !Array.isArray(quiz.questions)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid quiz data ❌'
+      });
+    }
+
+    const newQuiz = new Quiz({
+      formName: quiz.formName,
+      questions: quiz.questions
     });
 
-    await quiz.save();
+    await newQuiz.save();
 
     return res.json({
       success: true,
       message: 'Quiz saved ✅',
-      quiz
+      quiz: newQuiz
     });
   } catch (err) {
     console.error(err);

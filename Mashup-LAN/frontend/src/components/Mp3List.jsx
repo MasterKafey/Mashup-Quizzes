@@ -82,12 +82,39 @@ function Mp3List() {
     setChecked(checked.map((c, i) => (i === index ? !c : c)));
   };
 
-  async function createQuiz(formName, selectedFiles, questions) {
+  /**
+   * This function takes all the data from the front and returns a Quiz object
+   * TODO: Quiz type cote front
+   */
+  function prepareQuizData(formName, selectedFiles, questions) {
+    const quiz = {
+      formName: formName,
+      questions: []
+    };
+
+    // Ajout des questions de type "Musique"
+    selectedFiles.forEach((musicFile) => {
+      quiz.questions.push({
+        type: 'MusiqueQuestion',
+        file: musicFile
+      });
+    });
+
+    // Ajout des questions de type "Texte"
+    questions.forEach((textQuestion) => {
+      quiz.questions.push({
+        type: 'TextQuestion',
+        textQuestion: textQuestion.question
+      });
+    });
+
+    return quiz;
+  }
+
+  async function createQuiz(quiz) {
     try {
       const response = await axios.post('http://localhost:3000/quiz-creation', {
-        formName,
-        selectedFiles,
-        questions
+        quiz
       });
 
       console.log('✅ Quiz created:', response.data);
@@ -116,7 +143,8 @@ function Mp3List() {
       return;
     }
     console.log('Selected files:', formName, selectedFiles, questions);
-    createQuiz(formName, selectedFiles, questions);
+    const quiz = prepareQuizData(formName, selectedFiles, questions);
+    createQuiz(quiz);
   };
 
   // 2 EME COMPOSANT  C EST MOCHE MAIS CA MARCHE
