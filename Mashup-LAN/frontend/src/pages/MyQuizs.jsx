@@ -1,9 +1,31 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function MyQuizs() {
-  const quizzes = ["Mario Kart Quiz", "Zelda Quiz"];
+  const [myQuizs, setMyQuizs] = useState([]);
 
-  const handleClick = (quizName) => {
-    console.log("Quiz clicked:", quizName);
+  useEffect(() => {
+    const fetchQuizs = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/quizs');
+        const rawData = res.data;
+        const formatedData = rawData.map((quizObj) => {
+          return { quizId: quizObj._id, quizName: quizObj.formName };
+        });
+
+        console.log(formatedData);
+        setMyQuizs(formatedData); // backend sends array of filenames
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load music list ❌');
+      }
+    };
+    fetchQuizs();
+  }, []);
+
+  const handleClick = (quiz) => {
+    console.log('Quiz clicked:', quiz.quizName);
+    console.log('id', quiz.quizId);
   };
 
   return (
@@ -14,13 +36,14 @@ function MyQuizs() {
         </h1>
 
         <ul className="space-y-4">
-          {quizzes.map((quiz) => (
+          {myQuizs.map((quiz) => (
             <li
-              key={quiz}
+              key={quiz.quizId}
               className="flex items-center justify-between border-b pb-2"
             >
-              <span className="text-gray-700">{quiz}</span>
+              <span className="text-gray-700">{quiz.quizName}</span>
               <button
+                id={quiz.quizId + ' button'}
                 onClick={() => handleClick(quiz)}
                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-1 rounded-lg shadow-md transition"
               >
