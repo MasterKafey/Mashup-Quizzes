@@ -14,6 +14,7 @@ function QuizLive() {
         const response = await fetch(`http://localhost:3000/quiz/${quizId}`);
         const data = await response.json();
         setQuestions(data.questions || []);
+
       } catch (error) {
         console.error('Error fetching quiz:', error);
       }
@@ -22,18 +23,23 @@ function QuizLive() {
     fetchQuiz();
   }, [quizId]);
 
+    useEffect(() => {
+    console.log('Current Question Index:', questions);
+
+  }, [currentIndex]);
+
   const handleConfirm = () => {
     if (!answer.trim()) return;
 
     const currentQuestion = questions[currentIndex];
-    setAnswers(prev => [
+    setAnswers((prev) => [
       ...prev,
       { questionId: currentQuestion._id, answer: answer.trim() }
     ]);
 
     setAnswer('');
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      setCurrentIndex((prev) => prev + 1);
     } else {
       alert('Quiz completed!');
       console.log('All answers:', answers);
@@ -60,14 +66,20 @@ function QuizLive() {
         {/* --- MusiqueQuestion --- */}
         {currentQuestion.type === 'MusiqueQuestion' && (
           <div className="flex flex-col items-center mb-6">
-            <audio controls className="w-full mb-4 rounded-md">
+            <audio
+              key={currentQuestion._id} // ✅ Forces React to remount audio when question changes
+              controls
+              className="w-full mb-4 rounded-md"
+            >
               <source
-                src={`http://localhost:3000/music/test2.mp4`}
+                src={`http://localhost:3000/music/${currentQuestion.file}`}
                 type="audio/mpeg"
               />
               Your browser does not support the audio element.
             </audio>
-            <p className="text-gray-600">Écoute le son et réponds ci-dessous 👇</p>
+            <p className="text-gray-600">
+              Écoute le son et réponds ci-dessous 👇
+            </p>
           </div>
         )}
 

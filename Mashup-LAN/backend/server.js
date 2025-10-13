@@ -19,7 +19,6 @@ app.get('/music', (req, res) => {
 
 // Admin password check
 app.post('/admin', (req, res) => {
-  console.log(req.body);
   const { password } = req.body;
 
   if (!password) {
@@ -92,7 +91,7 @@ app.get('/quiz/:id', async (req, res) => {
 });
 
 app.get('/music/:filename', (req, res) => {
-  const fileName = req.params.filename;
+  const fileName = req.params.filename ;
   const filePath = path.join(__dirname, 'mp3', fileName);
 
   res.sendFile(filePath, (err) => {

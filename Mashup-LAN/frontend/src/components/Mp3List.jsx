@@ -8,7 +8,7 @@ function Mp3List() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [formName, setFormName] = useState('');
-  const [questions, setQuestions] = useState([{ question: '' }]);
+  const [questions, setQuestions] = useState([]);
 
   const navigate = useNavigate();
 
@@ -138,7 +138,10 @@ function Mp3List() {
   const handleConfirm = () => {
     const selectedFiles = files.filter((_, i) => checked[i]);
 
-    if (formName.trim() === '' || selectedFiles.length <= 0) {
+    if (
+      formName.trim() === '' ||
+      (selectedFiles.length <= 0 && questions.length <= 0)
+    ) {
       alert("Met un ptn de nom ou choisi des fichiers jsp .. c'est évident");
       return;
     }
@@ -148,7 +151,7 @@ function Mp3List() {
   };
 
   // 2 EME COMPOSANT  C EST MOCHE MAIS CA MARCHE
-
+  // QUESTIONS TEXTES 
   function QuestionsQuiz() {
     // Add an empty question
     const addQuestion = () => {
@@ -165,16 +168,6 @@ function Mp3List() {
       const updated = [...questions];
       updated[index].question = value;
       setQuestions(updated);
-    };
-
-    // Confirm: log or send to backend
-    const handleConfirm = () => {
-      if (!formName.trim() || questions.some((q) => !q.question.trim())) {
-        alert('⚠️ Please enter a quiz name and fill all questions.');
-        return;
-      }
-      console.log('✅ Quiz created:', { formName, questions });
-      // Here you could call axios.post('/quiz-creation', { formName, questions })
     };
 
     return (

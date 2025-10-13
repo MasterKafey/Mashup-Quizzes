@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function MyQuizs() {
+
+  const navigate = useNavigate();
   const [myQuizs, setMyQuizs] = useState([]);
 
   useEffect(() => {
@@ -44,7 +47,7 @@ function MyQuizs() {
               <span className="text-gray-700">{quiz.quizName}</span>
               <button
                 id={quiz.quizId + ' button'}
-                onClick={() => handleClick(quiz)}
+                onClick={() => navigate(`/quiz-live/${quiz.quizId}`)}
                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-1 rounded-lg shadow-md transition"
               >
                 Start
