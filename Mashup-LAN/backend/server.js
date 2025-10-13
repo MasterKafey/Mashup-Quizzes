@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const getMusicList = require('./getMusicList');
+const path = require('path'); 
 const { Quiz } = require('./mongo');
 
 const PORT = 3000;
@@ -80,6 +81,29 @@ app.get('/quizs', async (req, res) => {
   }
 });
 
+app.get('/quiz/:id', async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+    res.json(quiz);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get('/music/:filename', (req, res) => {
+  const fileName = req.params.filename;
+  const filePath = path.join(__dirname, 'mp3', fileName);
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(404).send('File not found');
+    } else {
+      console.log('Sent:', fileName);
+    }
+  });
+});
 // ====== Start Server ======
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
