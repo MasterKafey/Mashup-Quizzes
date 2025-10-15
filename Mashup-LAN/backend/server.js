@@ -1,16 +1,23 @@
 const express = require('express');
 const cors = require('cors');
 const getMusicList = require('./getMusicList');
-const path = require('path'); 
+const path = require('path');
+const http = require('http');
 const { Quiz } = require('./mongo');
+const WebSocket = require('ws');
 
 const PORT = 3000;
 const app = express();
+const connections = {}; // { username: ws }
+
+// ✅ Create HTTP server for both Express + WS
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 app.use(express.json());
 app.use(cors());
 
-// ====== Routes ======
+/////////////////////////////HTTP REQUESTS/////////////////////////////
 
 // Return static music list
 app.get('/music', (req, res) => {
@@ -91,7 +98,7 @@ app.get('/quiz/:id', async (req, res) => {
 });
 
 app.get('/music/:filename', (req, res) => {
-  const fileName = req.params.filename ;
+  const fileName = req.params.filename;
   const filePath = path.join(__dirname, 'mp3', fileName);
 
   res.sendFile(filePath, (err) => {
@@ -103,6 +110,60 @@ app.get('/music/:filename', (req, res) => {
     }
   });
 });
+
+// ======================
+//  ADMIN WS TRIGGER
+// ======================
+app.post('/start-quiz', (req, res) => {
+  console.log('🚀 Starting quiz for all users');
+
+  Object.values(connections).forEach((ws) => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'start_quiz' }));
+    }
+  });
+
+  res.json({ success: true, message: 'Quiz started for all users' });
+});
+
+
+/////////////////////////////WS REQUESTS/////////////////////////////
+
+wss.on('connection', (ws) => {
+  console.log('🟢 New WS connection');
+
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message);
+
+      if (data.type === 'join') {
+        const username = data.username.trim();
+        if (!username) return;
+
+        connections[username] = ws;
+        ws.username = username;
+
+        console.log(`👤 ${username} joined`);
+        // Optionally send confirmation
+        ws.send(JSON.stringify({ type: 'joined', message: 'Welcome!' }));
+      }
+
+      if (data.type === 'ping') {
+        ws.send(JSON.stringify({ type: 'pong' }));
+      }
+    } catch (err) {
+      console.error('WS message error:', err);
+    }
+  });
+
+  ws.on('close', () => {
+    if (ws.username) {
+      console.log(`🔴 ${ws.username} disconnected`);
+      delete connections[ws.username];
+    }
+  });
+});
+
 // ====== Start Server ======
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
