@@ -26,7 +26,7 @@ function QuizLive() {
   // ✅ Establish WebSocket connection
   useEffect(() => {
     const ws = new WebSocket(
-      import.meta.env.VITE_WS_SERVER
+      import.meta.env.VITE_URL_WS
     );
     setSocket(ws);
 
