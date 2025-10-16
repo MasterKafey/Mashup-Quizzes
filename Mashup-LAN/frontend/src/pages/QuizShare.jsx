@@ -1,19 +1,18 @@
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import QRCode from 'react-qr-code';
 import { useEffect, useState } from 'react';
 
 function QuizShare() {
-  const { quizId } = useParams();
-  const location = useLocation();
-  const quizName = location.state?.quizName || 'Unknown Quiz';
+  const { quizId, quizName } = useParams();
 
-  const link = `http://localhost:5173/join/${quizId}`; // public join link for participants
+
+  const link = import.meta.env.VITE_URL_FRONTEND + `/quiz-live/${quizId}`; // public join link for participants
 
   // WebSocket connection count
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:3001/${quizId}`); // backend WS endpoint
+    const ws = new WebSocket( import.meta.env.VITE_URL_WS + `/${quizId}`); // backend WS endpoint
 
     ws.onmessage = (msg) => {
       try {
@@ -39,6 +38,13 @@ function QuizShare() {
         className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
       >
         Copy Link
+      </button>
+
+       <button
+        onClick={() => navigator.clipboard.writeText(link)}
+        className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
+      >
+        START
       </button>
       <p className="mt-6 text-lg">Active connections: {count}</p>
     </div>

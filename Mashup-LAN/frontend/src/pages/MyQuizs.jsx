@@ -46,7 +46,7 @@ function MyQuizs() {
               <span className="text-gray-700">{quiz.quizName}</span>
               <button
                 id={quiz.quizId + ' button'}
-                onClick={() => navigate(`/quiz-live/${quiz.quizId}`)}
+                onClick={() => navigate(`/quiz-share/${quiz.quizName}/${quiz.quizId}`)}
                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-1 rounded-lg shadow-md transition"
               >
                 Start

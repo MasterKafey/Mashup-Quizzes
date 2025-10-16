@@ -7,7 +7,6 @@ const { Quiz } = require('./mongo');
 const WebSocket = require('ws');
 require('dotenv').config();
 
-
 const PORT = 3000;
 const app = express();
 const connections = {}; // { username: ws }
@@ -132,7 +131,6 @@ app.post('/start-quiz', (req, res) => {
 
   res.json({ success: true, message: 'Quiz started for all users' });
 });
-
 
 /////////////////////////////WS REQUESTS/////////////////////////////
 
