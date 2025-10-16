@@ -69,3 +69,31 @@ Administrateur/animateur de l’événement (accès au backoffice).
 
 ## 9. Livrables attendus
 - Application web prête à déployer (Docker)
+
+
+# INSTALATION 
+
+## BACKEND
+
+Ajouter .env 
+
+``` cd backend ``` 
+
+```npm i ``` 
+
+```docker compose --build ```
+
+```docker compose up -d ``` 
+
+```node server.js```
+
+## FRONTEND 
+
+Ajouter .env 
+
+```cd backend``` 
+
+```npm i ``` 
+
+```npm run dev```
+
