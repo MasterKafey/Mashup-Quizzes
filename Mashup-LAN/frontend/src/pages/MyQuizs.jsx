@@ -3,14 +3,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function MyQuizs() {
-
   const navigate = useNavigate();
   const [myQuizs, setMyQuizs] = useState([]);
 
   useEffect(() => {
     const fetchQuizs = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/quizs');
+        const res = await axios.get(import.meta.env.VITE_URL_SERVER + '/quizs');
         const rawData = res.data;
         const formatedData = rawData.map((quizObj) => {
           return { quizId: quizObj._id, quizName: quizObj.formName };

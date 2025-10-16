@@ -11,10 +11,11 @@ function QuizLive() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/quiz/${quizId}`);
+        const response = await fetch(
+          import.meta.env.VITE_URL_SERVER + `/quiz/${quizId}`
+        );
         const data = await response.json();
         setQuestions(data.questions || []);
-
       } catch (error) {
         console.error('Error fetching quiz:', error);
       }
@@ -23,9 +24,8 @@ function QuizLive() {
     fetchQuiz();
   }, [quizId]);
 
-    useEffect(() => {
+  useEffect(() => {
     console.log('Current Question Index:', questions);
-
   }, [currentIndex]);
 
   const handleConfirm = () => {
@@ -72,7 +72,10 @@ function QuizLive() {
               className="w-full mb-4 rounded-md"
             >
               <source
-                src={`http://localhost:3000/music/${currentQuestion.file}`}
+                src={
+                  import.meta.env.VITE_URL_SERVER +
+                  `/music/${currentQuestion.file}`
+                }
                 type="audio/mpeg"
               />
               Your browser does not support the audio element.

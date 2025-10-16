@@ -20,7 +20,7 @@ function Mp3List() {
   useEffect(() => {
     const fetchMusic = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/music');
+        const res = await axios.get(import.meta.env.VITE_URL_SERVER + '/music');
         setFiles(res.data); // backend sends array of filenames
       } catch (err) {
         console.error(err);
@@ -113,9 +113,12 @@ function Mp3List() {
 
   async function createQuiz(quiz) {
     try {
-      const response = await axios.post('http://localhost:3000/quiz-creation', {
-        quiz
-      });
+      const response = await axios.post(
+        import.meta.env.VITE_URL_SERVER + '/quiz-creation',
+        {
+          quiz
+        }
+      );
 
       console.log('✅ Quiz created:', response.data);
       return response.data;
@@ -151,7 +154,7 @@ function Mp3List() {
   };
 
   // 2 EME COMPOSANT  C EST MOCHE MAIS CA MARCHE
-  // QUESTIONS TEXTES 
+  // QUESTIONS TEXTES
   function QuestionsQuiz() {
     // Add an empty question
     const addQuestion = () => {

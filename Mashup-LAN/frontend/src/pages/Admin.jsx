@@ -11,7 +11,7 @@ function Admin() {
     try {
       console.log(password);
       const res = await axios.post(
-        'http://localhost:3000/admin',
+        import.meta.env.VITE_URL_SERVER + '/admin',
         { password },
         {
           headers: { 'Content-Type': 'application/json' }

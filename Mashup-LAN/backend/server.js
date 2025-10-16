@@ -5,6 +5,8 @@ const path = require('path');
 const http = require('http');
 const { Quiz } = require('./mongo');
 const WebSocket = require('ws');
+require('dotenv').config();
+
 
 const PORT = 3000;
 const app = express();
