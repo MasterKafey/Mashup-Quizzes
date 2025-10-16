@@ -1,0 +1,37 @@
+services:
+
+    backend.quiz.archilan:
+        build:
+            dockerfile: .docker/build/Dockerfile
+            context: backend/
+        container_name: backend.quiz.archilan
+        environment:
+            MUSIC_FOLDER: mp3
+            PASSWORD: Mashup123
+            DATABASE_URL: mongodb://database.quiz.archilan:27017/Mashup
+        volumes:
+            - ./volumes/backend/mp3:/app/mp3
+        ports:
+            - "3000:3000"
+        networks:
+            - database
+
+    frontend.quiz.archilan:
+        build:
+            dockerfile: .docker/build/Dockerfile
+            context: frontend/
+        container_name: frontend.quiz.archilan
+        ports:
+            - "80:80"
+
+    database.quiz.archilan:
+        image: mongo:7.0
+        container_name: database.quiz.archilan
+        ports:
+            - "27017:27017"
+        volumes:
+            - "./backend/init.js:/docker-entrypoint-initdb.d/init.js:ro"
+        networks:
+            - database
+networks:
+    database:
