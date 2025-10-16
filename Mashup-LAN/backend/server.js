@@ -99,16 +99,21 @@ app.get('/quiz/:id', async (req, res) => {
   }
 });
 
-app.get('/music/:filename', (req, res) => {
-  const fileName = req.params.filename;
-  const filePath = path.join(__dirname, 'mp3', fileName);
+app.get('/music/:filename', (req, res, next) => {
+  const filePath = path.join(__dirname, 'mp3', req.params.filename);
 
   res.sendFile(filePath, (err) => {
     if (err) {
+      if (err.code === 'ECONNABORTED') {
+        console.warn(`⚠️ Client aborted while sending ${req.params.filename}`);
+        return;
+      }
       console.error('Error sending file:', err);
-      res.status(404).send('File not found');
+      if (!res.headersSent) {
+        res.status(err.statusCode || 500).send('File error');
+      }
     } else {
-      console.log('Sent:', fileName);
+      console.log(`✅ Sent: ${req.params.filename}`);
     }
   });
 });
