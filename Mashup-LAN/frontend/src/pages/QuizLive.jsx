@@ -57,6 +57,18 @@ function QuizLive() {
 
         case 'quiz_over':
           setPhase('finished');
+
+          const savedAnswers = JSON.parse(
+            localStorage.getItem('answers') || '[]'
+          );
+
+          ws.send(
+            JSON.stringify({
+              type: 'answers',
+              data: { id: userId, name:name, answers: savedAnswers }
+            })
+          );
+
           localStorage.removeItem('answers');
           break;
 
@@ -118,13 +130,6 @@ function QuizLive() {
   // ✅ Handle answer submission
   const handleConfirm = () => {
     if (!answer.trim() || !socket || !question) return;
-
-    socket.send(
-      JSON.stringify({
-        type: 'answer',
-        data: { questionId: question._id, answer: answer.trim(), id: userId }
-      })
-    );
 
     setAnswers((prev) => [
       ...prev,

@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const http = require('http');
+const fs = require('fs');
 const WebSocket = require('ws');
 const app = express();
 const PORT = 3000;
@@ -18,6 +19,8 @@ const mm = require('music-metadata');
 // =================== GLOBAL STATE ===================
 const connections = {}; // players { userId: { ws, name } }
 const admins = {}; // admins { adminId: ws }
+let globalAnswers = {}; // collected answers
+
 let currentQuestionIndex = 0;
 let quizRunning = false;
 
@@ -107,6 +110,7 @@ app.get('/music/:filename', (req, res, next) => {
   });
 });
 
+//TODO: REINIT GLOBAL ANSWERS WHEN QUIZ STARTS AGAIN
 // =================== START QUIZ ===================
 
 app.post('/start-quiz', async (req, res) => {
@@ -123,7 +127,7 @@ app.post('/start-quiz', async (req, res) => {
     }
 
     console.log('🚀 Starting quiz for all users, loading from DB...');
-
+    globalAnswers = {}; // reset collected answers
     // ✅ Load questions from MongoDB
     const quiz = await Quiz.findById(quizId);
     if (
@@ -218,6 +222,34 @@ wss.on('connection', (ws) => {
         return;
       }
 
+      if (data.type === 'answers') {
+        const { id, name, answers } = data.data;
+        globalAnswers[id] = { name, answers };
+        console.log(`📥 Received all answers from ${name}`);
+
+        // 🔹 Write to a text file
+        const filePath = path.join(__dirname, 'answers.txt');
+
+        // Format nicely (append new entries or overwrite each time)
+        const content = Object.values(globalAnswers)
+          .map(
+            (entry) =>
+              `👤 ${entry.name}\n${entry.answers
+                .map((a, i) => `  Q${i + 1}: ${a.answer}`)
+                .join('\n')}\n`
+          )
+          .join('\n----------------------\n');
+
+        // Save the full global answers
+        fs.writeFile(filePath, content, (err) => {
+          if (err) {
+            console.error('❌ Error writing answers file:', err);
+          } else {
+            console.log('📝 Answers saved to answers.txt');
+          }
+        });
+      }
+
       // --- PING / PONG ---
       if (data.type === 'ping') {
         ws.send(JSON.stringify({ type: 'pong' }));
@@ -280,7 +312,7 @@ async function sendNextQuestion() {
 
   // Broadcast question to all connected players
   broadcastToPlayers({ type: 'question', data: question, duration: duration });
-  
+
   // Wait duration seconds before sending next question
   setTimeout(() => {
     currentQuestionIndex++;
