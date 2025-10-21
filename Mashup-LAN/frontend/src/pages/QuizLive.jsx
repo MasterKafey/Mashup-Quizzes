@@ -178,6 +178,7 @@ function QuizLive() {
             <audio
               key={question._id}
               controls
+              autoPlay
               className="w-full mb-6 rounded-md"
             >
               <source
