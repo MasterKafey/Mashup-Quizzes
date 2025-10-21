@@ -12,7 +12,11 @@ function QuizLive() {
   const [question, setQuestion] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0); // purely cosmetic timer
   const [answer, setAnswer] = useState('');
-  const [answers, setAnswers] = useState([]);
+
+  const [answers, setAnswers] = useState(() => {
+    const saved = localStorage.getItem('answers');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // ✅ Generate an ID if needed
   useEffect(() => {
@@ -25,9 +29,7 @@ function QuizLive() {
 
   // ✅ Establish WebSocket connection
   useEffect(() => {
-    const ws = new WebSocket(
-      import.meta.env.VITE_URL_WS
-    );
+    const ws = new WebSocket(import.meta.env.VITE_URL_WS);
     setSocket(ws);
 
     ws.onopen = () => console.log('✅ Connected to WS server');
@@ -39,6 +41,7 @@ function QuizLive() {
       switch (msg.type) {
         case 'quiz_started':
           setPhase('playing');
+          setAnswers([]);
           break;
 
         case 'question':
@@ -54,6 +57,7 @@ function QuizLive() {
 
         case 'quiz_over':
           setPhase('finished');
+          localStorage.removeItem('answers');
           break;
 
         default:
@@ -65,6 +69,11 @@ function QuizLive() {
 
     return () => ws.close();
   }, [quizId]);
+
+  //Stores the answers in local storage
+  useEffect(() => {
+    localStorage.setItem('answers', JSON.stringify(answers));
+  }, [answers]);
 
   // ✅ Local cosmetic countdown
   useEffect(() => {
