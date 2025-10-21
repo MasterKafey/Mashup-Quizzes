@@ -46,7 +46,7 @@ function QuizLive() {
 
         case 'question':
           setQuestion(msg.data);
-          setTimeLeft(30); // purely cosmetic
+          setTimeLeft(msg.duration - 1); // purely cosmetic
           setAnswer('');
           break;
 

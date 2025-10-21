@@ -8,13 +8,12 @@ const app = express();
 const PORT = 3000;
 require('dotenv').config();
 
-//Imports 
+//Imports
 const { Quiz } = require('./mongo');
 const getMusicList = require('./getMusicList');
 
 //New Libraries
 const mm = require('music-metadata');
-
 
 // =================== GLOBAL STATE ===================
 const connections = {}; // players { userId: { ws, name } }
@@ -263,9 +262,6 @@ async function sendNextQuestion() {
   const question = quizQuestions[currentQuestionIndex];
   console.log(`📤 Sending question ${currentQuestionIndex + 1}`, question);
 
-  // Broadcast question to all connected players
-  broadcastToPlayers({ type: 'question', data: question });
-
   // Default fallback duration
   let duration = 15;
 
@@ -282,6 +278,9 @@ async function sendNextQuestion() {
     }
   }
 
+  // Broadcast question to all connected players
+  broadcastToPlayers({ type: 'question', data: question, duration: duration });
+  
   // Wait duration seconds before sending next question
   setTimeout(() => {
     currentQuestionIndex++;
