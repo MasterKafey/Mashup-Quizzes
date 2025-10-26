@@ -135,7 +135,7 @@ function QuizLive() {
     if (!answer.trim() || !socket || !question) return;
 
     setAnswers((prev) => [
-      ...prev,
+      ...prev.filter((a) => a.questionId !== question._id),
       { questionId: question._id, answer: answer.trim() }
     ]);
     setAnswer('');
