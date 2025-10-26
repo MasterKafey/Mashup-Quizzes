@@ -29,6 +29,8 @@ function QuizLive() {
 
   // ✅ Establish WebSocket connection
   useEffect(() => {
+    if (!userId) return; // ✅ wait until userId is generated
+
     const ws = new WebSocket(import.meta.env.VITE_URL_WS);
     setSocket(ws);
 
@@ -46,30 +48,28 @@ function QuizLive() {
 
         case 'question':
           setQuestion(msg.data);
-          setTimeLeft(msg.duration - 1); // purely cosmetic
+          setTimeLeft(msg.duration - 1);
           setAnswer('');
-          break;
-
-        case 'time_update':
-          // optional if server sends it
-          setTimeLeft(msg.data);
           break;
 
         case 'quiz_over':
           setPhase('finished');
-
           const savedAnswers = JSON.parse(
             localStorage.getItem('answers') || '[]'
           );
 
+          // ✅ Always read the latest name/id directly from localStorage
+          const finalId = localStorage.getItem('id');
+          const finalName = localStorage.getItem('name');
+
           ws.send(
             JSON.stringify({
               type: 'answers',
-              data: { id: userId, name:name, answers: savedAnswers }
+              data: { id: finalId, name: finalName, answers: savedAnswers }
             })
           );
 
-          localStorage.removeItem('answers');
+          console.log({ id: finalId, name: finalName, answers: savedAnswers });
           break;
 
         default:
@@ -78,9 +78,8 @@ function QuizLive() {
     };
 
     ws.onclose = () => console.log('❌ WS disconnected');
-
     return () => ws.close();
-  }, [quizId]);
+  }, [quizId, userId]);
 
   //Stores the answers in local storage
   useEffect(() => {
@@ -98,6 +97,10 @@ function QuizLive() {
 
   const handleJoin = () => {
     if (!name.trim() || !socket) return;
+
+    // ✅ Save name locally
+    localStorage.setItem('name', name.trim());
+    setName(name.trim());
 
     // Wait for connection to be ready
     if (socket.readyState !== WebSocket.OPEN) {

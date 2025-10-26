@@ -180,11 +180,7 @@ wss.on("connection", (ws) => {
         }
         return;
       }
-
-      // --- PING / PONG ---
-      if (data.type === "ping") {
-        ws.send(JSON.stringify({ type: "pong" }));
-      }
+    
     } catch (err) {
       console.error("❌ WS message error:", err);
     }

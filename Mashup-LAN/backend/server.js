@@ -110,7 +110,6 @@ app.get('/music/:filename', (req, res, next) => {
   });
 });
 
-//TODO: REINIT GLOBAL ANSWERS WHEN QUIZ STARTS AGAIN
 // =================== START QUIZ ===================
 
 app.post('/start-quiz', async (req, res) => {
@@ -248,11 +247,6 @@ wss.on('connection', (ws) => {
             console.log('📝 Answers saved to answers.txt');
           }
         });
-      }
-
-      // --- PING / PONG ---
-      if (data.type === 'ping') {
-        ws.send(JSON.stringify({ type: 'pong' }));
       }
     } catch (err) {
       console.error('❌ WS message error:', err);

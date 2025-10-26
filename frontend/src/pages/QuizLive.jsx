@@ -78,6 +78,9 @@ function QuizLive() {
   const handleJoin = () => {
     if (!name.trim() || !socket) return;
 
+    //add name in local Storage
+    localStorage.setItem('name', name.trim());
+
     // Wait for connection to be ready
     if (socket.readyState !== WebSocket.OPEN) {
       console.warn('⏳ Waiting for socket to open...');
