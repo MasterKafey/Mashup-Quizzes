@@ -50,6 +50,7 @@ function QuizLive() {
           setQuestion(msg.data);
           setTimeLeft(msg.duration - 1);
           setAnswer('');
+          
           break;
 
         case 'quiz_over':
@@ -95,6 +96,34 @@ function QuizLive() {
     return () => clearInterval(interval);
   }, [phase, timeLeft]);
 
+  // Auto-submit when timer hits 0: if the user hasn't confirmed, store their
+  // current answer (trimmed) or an empty string so the 'quiz_over' sender will
+  // include it. We persist synchronously to localStorage inside the updater to
+  // avoid races.
+  useEffect(() => {
+    if (phase !== 'playing' || timeLeft !== 0 || !question) return;
+
+    setAnswers((prev) => {
+      // If already answered for this question, do nothing
+      if (prev.some((a) => a.questionId === question._id)) return prev;
+
+      const value = answer.trim();
+      const newAnswers = [
+        ...prev.filter((a) => a.questionId !== question._id),
+        { questionId: question._id, answer: value }
+      ];
+      try {
+        localStorage.setItem('answers', JSON.stringify(newAnswers));
+      } catch (e) {
+        console.warn('Failed to write answers to localStorage', e);
+      }
+      return newAnswers;
+    });
+
+    // clear the input for the next question
+    setAnswer('');
+  }, [timeLeft, phase, question, answer]);
+
   const handleJoin = () => {
     if (!name.trim() || !socket) return;
 
@@ -132,11 +161,13 @@ function QuizLive() {
 
   // ✅ Handle answer submission
   const handleConfirm = () => {
-    if (!answer.trim() || !socket || !question) return;
+    if (!socket || !question) return;
+
+    if (!answer) answer = "RIEN";
 
     setAnswers((prev) => [
       ...prev.filter((a) => a.questionId !== question._id),
-      { questionId: question._id, answer: answer.trim() }
+      { questionId: question._id, answer: answer }
     ]);
     setAnswer('');
   };

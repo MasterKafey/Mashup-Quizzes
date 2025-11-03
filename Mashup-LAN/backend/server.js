@@ -209,22 +209,11 @@ wss.on('connection', (ws) => {
         return;
       }
 
-      // --- PLAYER ANSWER ---
-      if (data.type === 'answer') {
-        const { questionId, answer, id } = data.data;
-        const user = connections[id];
-        if (user) {
-          console.log(
-            `📝 ${user.name} (${id}) answered Q${questionId}: ${answer}`
-          );
-        }
-        return;
-      }
 
       if (data.type === 'answers') {
         const { id, name, answers } = data.data;
         globalAnswers[id] = { name, answers };
-        console.log(`📥 Received all answers from ${name}`);
+        console.log(`📥 Received all answers from ${name} ${JSON.stringify(answers)}`);
 
         // 🔹 Write to a text file
         const filePath = path.join(__dirname, 'answers.txt');
