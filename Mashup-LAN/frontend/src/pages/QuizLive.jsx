@@ -101,7 +101,7 @@ function QuizLive() {
   // include it. We persist synchronously to localStorage inside the updater to
   // avoid races.
   useEffect(() => {
-    if (phase !== 'playing' || timeLeft !== 0 || !question) return;
+    if (phase !== 'playing' || timeLeft !== 0 || !question ) return;
 
     setAnswers((prev) => {
       // If already answered for this question, do nothing
@@ -239,12 +239,6 @@ function QuizLive() {
             className="w-full p-3 border border-gray-300 rounded-xl mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
-          <button
-            onClick={handleConfirm}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition"
-          >
-            Confirmer
-          </button>
         </div>
       </div>
     );
