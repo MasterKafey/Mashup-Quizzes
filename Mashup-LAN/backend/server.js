@@ -110,6 +110,22 @@ app.get('/music/:filename', (req, res, next) => {
   });
 });
 
+
+app.get('/answers-txt', (req, res) => {
+  const filePath = path.join(__dirname, 'answers.txt');
+  console.log('Request for /view-answers-simple - Sending with res.sendFile...');
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      if (!res.headersSent) {
+        res.status(err.statusCode || 500).send('File send error');
+      }
+    } else {
+      console.log('✅ File content sent.');
+    }
+  });
+});
 // =================== START QUIZ ===================
 
 app.post('/start-quiz', async (req, res) => {

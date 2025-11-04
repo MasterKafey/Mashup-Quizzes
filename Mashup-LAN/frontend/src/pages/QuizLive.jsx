@@ -159,19 +159,6 @@ function QuizLive() {
     setPhase('waiting');
   };
 
-  // ✅ Handle answer submission
-  const handleConfirm = () => {
-    if (!socket || !question) return;
-
-    if (!answer) answer = "RIEN";
-
-    setAnswers((prev) => [
-      ...prev.filter((a) => a.questionId !== question._id),
-      { questionId: question._id, answer: answer }
-    ]);
-    setAnswer('');
-  };
-
   // --- UI per phase ---
   if (phase === 'enterName') {
     return (
