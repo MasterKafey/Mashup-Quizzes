@@ -5,6 +5,7 @@ import MyQuizs from './pages/MyQuizs';
 import QuizCreation from './pages/QuizCreation';
 import QuizShare from './pages/QuizShare';
 import QuizLive from './pages/QuizLive';
+import AnswersTxt from './pages/AnswersTxt';
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
           <Route path="/my-quizs" element={<MyQuizs />} />
           <Route path="/quiz-share/:quizName/:quizId" element={<QuizShare />} />
           <Route path="/quiz-live/:quizId" element={<QuizLive />} />
+          <Route path="/answers-txt" element={<AnswersTxt />} />
+
 
 
         </Routes>

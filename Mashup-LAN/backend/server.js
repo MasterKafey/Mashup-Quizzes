@@ -113,19 +113,18 @@ app.get('/music/:filename', (req, res, next) => {
 
 app.get('/answers-txt', (req, res) => {
   const filePath = path.join(__dirname, 'answers.txt');
-  console.log('Request for /view-answers-simple - Sending with res.sendFile...');
 
-  res.sendFile(filePath, (err) => {
+  fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      console.error('Error sending file:', err);
-      if (!res.headersSent) {
-        res.status(err.statusCode || 500).send('File send error');
-      }
-    } else {
-      console.log('✅ File content sent.');
+      console.error('Error reading file:', err);
+      return res.status(500).send('Error reading file');
     }
+
+    res.type('text/plain'); // ensure plain text response
+    res.send(data);
   });
 });
+
 // =================== START QUIZ ===================
 
 app.post('/start-quiz', async (req, res) => {
